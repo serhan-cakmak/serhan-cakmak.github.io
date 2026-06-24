@@ -16,18 +16,13 @@ export default class ThreejsJourney
         this.$no = this.$container.querySelector('.js-no')
         this.step = 0
         this.maxStep = this.$messages.length - 1
-        this.seenCount = window.localStorage.getItem('threejsJourneySeenCount') || 0
-        this.seenCount = parseInt(this.seenCount)
         this.shown = false
         this.traveledDistance = 0
-        this.minTraveledDistance = (this.config.debug ? 5 : 75) * (this.seenCount + 1)
-        this.prevent = !!window.localStorage.getItem('threejsJourneyPrevent')
+        // Fixed distance — no localStorage scaling so it always fires after ~80 units of driving.
+        this.minTraveledDistance = this.config.debug ? 5 : 300
 
         if(this.config.debug)
             this.start()
-        
-        if(this.prevent)
-            return
 
         this.setYesNo()
         this.setLog()
@@ -51,11 +46,11 @@ export default class ThreejsJourney
         // Clicks
         this.$yes.addEventListener('click', () =>
         {
-            gsap.delayedCall(2, () =>
+            this.next()
+            gsap.delayedCall(5, () =>
             {
                 this.hide()
             })
-            window.localStorage.setItem('threejsJourneyPrevent', 1)
         })
 
         this.$no.addEventListener('click', () =>
@@ -127,10 +122,13 @@ export default class ThreejsJourney
 //             `,
 //             'color: #705df2;'
 //         )
-        console.log('%cWhat are you doing here?! you sneaky developer...', 'color: #32ffce');
-        console.log('%cDo you want to learn how this portfolio has been made?', 'color: #32ffce');
-        console.log('%cCheckout Three.js Journey 👉 https://threejs-journey.com?c=p2', 'color: #32ffce');
-        console.log('%c— Bruno', 'color: #777777');
+        // TODO(console-message): This is the easter egg message developers see when they
+        // open DevTools on your site. Customise the text and colour however you like.
+        // The colour string (#32ffce) is a CSS color value.
+        console.log('%cHey, sneaky developer! 👋', 'color: #32ffce');
+        console.log('%cGlad you peeked under the hood.', 'color: #32ffce');
+        console.log('%cFeel free to reach out 👉 https://github.com/serhan-cakmak', 'color: #32ffce');
+        console.log('%c— Serhan', 'color: #777777');
     }
 
     hide()
@@ -165,8 +163,6 @@ export default class ThreejsJourney
         })
 
         this.shown = true
-        
-        window.localStorage.setItem('threejsJourneySeenCount', this.seenCount + 1)
     }
 
     updateMessages()

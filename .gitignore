@@ -144,3 +144,8 @@ tags
 .history
 
 # End of https://www.gitignore.io/api/vim,node,macos,visualstudiocode
+
+
+
+personalized/*
+

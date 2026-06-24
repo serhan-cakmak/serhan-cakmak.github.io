@@ -42,35 +42,29 @@ export default class Resources extends EventEmitter
             { name: 'introArrowKeyBase', source: './models/intro/arrowKey/base.glb' },
             { name: 'introArrowKeyCollision', source: './models/intro/arrowKey/collision.glb' },
 
-            { name: 'introBBase', source: './models/intro/b/base.glb' },
-            { name: 'introBCollision', source: './models/intro/b/collision.glb' },
+            // Letter GLBs removed — name is now generated via Three.js TextGeometry in IntroSection.js
+            // { name: 'introBBase', source: './models/intro/b/base.glb' },
+            // { name: 'introBCollision', source: './models/intro/b/collision.glb' },
+            // { name: 'introRBase', source: './models/intro/r/base.glb' },
+            // { name: 'introRCollision', source: './models/intro/r/collision.glb' },
+            // { name: 'introUBase', source: './models/intro/u/base.glb' },
+            // { name: 'introUCollision', source: './models/intro/u/collision.glb' },
+            // { name: 'introNBase', source: './models/intro/n/base.glb' },
+            // { name: 'introNCollision', source: './models/intro/n/collision.glb' },
+            // { name: 'introOBase', source: './models/intro/o/base.glb' },
+            // { name: 'introOCollision', source: './models/intro/o/collision.glb' },
+            // { name: 'introSBase', source: './models/intro/s/base.glb' },
+            // { name: 'introSCollision', source: './models/intro/s/collision.glb' },
+            // { name: 'introIBase', source: './models/intro/i/base.glb' },
+            // { name: 'introICollision', source: './models/intro/i/collision.glb' },
+            // { name: 'introMBase', source: './models/intro/m/base.glb' },
+            // { name: 'introMCollision', source: './models/intro/m/collision.glb' },
 
-            { name: 'introRBase', source: './models/intro/r/base.glb' },
-            { name: 'introRCollision', source: './models/intro/r/collision.glb' },
-
-            { name: 'introUBase', source: './models/intro/u/base.glb' },
-            { name: 'introUCollision', source: './models/intro/u/collision.glb' },
-
-            { name: 'introNBase', source: './models/intro/n/base.glb' },
-            { name: 'introNCollision', source: './models/intro/n/collision.glb' },
-
-            { name: 'introOBase', source: './models/intro/o/base.glb' },
-            { name: 'introOCollision', source: './models/intro/o/collision.glb' },
-
-            { name: 'introSBase', source: './models/intro/s/base.glb' },
-            { name: 'introSCollision', source: './models/intro/s/collision.glb' },
-
-            { name: 'introIBase', source: './models/intro/i/base.glb' },
-            { name: 'introICollision', source: './models/intro/i/collision.glb' },
-
-            { name: 'introMBase', source: './models/intro/m/base.glb' },
-            { name: 'introMCollision', source: './models/intro/m/collision.glb' },
-
-            { name: 'introCreativeBase', source: './models/intro/creative/base.glb' },
-            { name: 'introCreativeCollision', source: './models/intro/creative/collision.glb' },
-
-            { name: 'introDevBase', source: './models/intro/dev/base.glb' },
-            { name: 'introDevCollision', source: './models/intro/dev/collision.glb' },
+            // "creative" and "dev" GLB objects removed from the intro section
+            // { name: 'introCreativeBase', source: './models/intro/creative/base.glb' },
+            // { name: 'introCreativeCollision', source: './models/intro/creative/collision.glb' },
+            // { name: 'introDevBase', source: './models/intro/dev/base.glb' },
+            // { name: 'introDevCollision', source: './models/intro/dev/collision.glb' },
 
             // Intro
             { name: 'crossroadsStaticBase', source: './models/crossroads/static/base.glb' },
@@ -106,33 +100,18 @@ export default class Resources extends EventEmitter
             { name: 'projectsDistinctionsCSSDABase', source: './models/projects/distinctions/cssda/base.glb' },
             { name: 'projectsDistinctionsCSSDACollision', source: './models/projects/distinctions/cssda/collision.glb' },
 
-            { name: 'projectsLuniFloor', source: './models/projects/luni/floorTexture.webp', type: 'texture' },
-            { name: 'projectsBonhomme10ansFloor', source: './models/projects/bonhomme10ans/floorTexture.webp', type: 'texture' },
-            { name: 'projectsThreejsJourneyFloor', source: './models/projects/threejsJourney/floorTexture.webp', type: 'texture' },
-            { name: 'projectsMadboxFloor', source: './models/projects/madbox/floorTexture.png', type: 'texture' },
-            { name: 'projectsScoutFloor', source: './models/projects/scout/floorTexture.png', type: 'texture' },
-            { name: 'projectsChartogneFloor', source: './models/projects/chartogne/floorTexture.png', type: 'texture' },
-            // { name: 'projectsZenlyFloor', source: './models/projects/zenly/floorTexture.png', type: 'texture' },
-            { name: 'projectsCitrixRedbullFloor', source: './models/projects/citrixRedbull/floorTexture.png', type: 'texture' },
-            { name: 'projectsPriorHoldingsFloor', source: './models/projects/priorHoldings/floorTexture.png', type: 'texture' },
-            { name: 'projectsOranoFloor', source: './models/projects/orano/floorTexture.png', type: 'texture' },
-            // { name: 'projectsGleecChatFloor', source: './models/projects/gleecChat/floorTexture.png', type: 'texture' },
-            // { name: 'projectsKepplerFloor', source: './models/projects/keppler/floorTexture.png', type: 'texture' },
+            // Project floor textures removed — generated at runtime via CanvasTexture in ProjectsSection._buildFloorTexture()
 
             // Information
             { name: 'informationStaticBase', source: './models/information/static/base.glb' },
             { name: 'informationStaticCollision', source: './models/information/static/collision.glb' },
             { name: 'informationStaticFloorShadow', source: './models/information/static/floorShadow.png', type: 'texture' },
 
-            { name: 'informationBaguetteBase', source: './models/information/baguette/base.glb' },
-            { name: 'informationBaguetteCollision', source: './models/information/baguette/collision.glb' },
+            // Baguette objects removed
 
-            { name: 'informationContactTwitterLabel', source: './models/information/static/contactTwitterLabel.png', type: 'texture' },
-            { name: 'informationContactGithubLabel', source: './models/information/static/contactGithubLabel.png', type: 'texture' },
-            { name: 'informationContactLinkedinLabel', source: './models/information/static/contactLinkedinLabel.png', type: 'texture' },
-            { name: 'informationContactMailLabel', source: './models/information/static/contactMailLabel.png', type: 'texture' },
+            // All 4 social-link labels are now canvas-generated text in InformationSection.js — no PNG files needed
 
-            { name: 'informationActivities', source: './models/information/static/activities.png', type: 'texture' },
+            // informationActivities texture removed — drawn at runtime via CanvasTexture in InformationSection.js
 
             // Playground
             { name: 'playgroundStaticBase', source: './models/playground/static/base.glb' },
