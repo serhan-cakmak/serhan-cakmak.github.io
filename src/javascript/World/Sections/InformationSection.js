@@ -76,7 +76,8 @@ export default class InformationSection
             return new THREE.CanvasTexture(c)
         }
 
-        // 4 entries must stay in sync with the 4 baked platform tiles in informationStaticBase.glb
+        // First 4 entries match the baked GLB platform tiles.
+        // Entries 5–6 (Letterboxd, Spotify) get synthetic Three.js platform tiles added below.
         this.links.options = [
             {
                 href: 'https://drive.google.com/file/d/1pP4FdU0Ev2MDGo1uztkCfD0MyhM2p-8n/view?usp=sharing',
@@ -93,6 +94,14 @@ export default class InformationSection
             {
                 href: 'mailto:cakmakserhan02@icloud.com',
                 labelTexture: _lbl('Mail')
+            },
+            {
+                href: 'https://letterboxd.com/serhomate/',
+                labelTexture: _lbl('Letterboxd')
+            },
+            {
+                href: 'https://open.spotify.com/user/up9wrrsnd7cq4tmnibcn3n7w9',
+                labelTexture: _lbl('Spotify')
             }
         ]
 
@@ -100,38 +109,52 @@ export default class InformationSection
         let i = 0
         for(const _option of this.links.options)
         {
-            // Set up
             const item = {}
             item.x = this.x + this.links.x + this.links.distanceBetween * i
             item.y = this.y + this.links.y
             item.href = _option.href
 
-            // Create area
             item.area = this.areas.add({
                 position: new THREE.Vector2(item.x, item.y),
                 halfExtents: new THREE.Vector2(this.links.halfExtents.x, this.links.halfExtents.y)
             })
-            item.area.on('interact', () =>
-            {
-                window.open(_option.href, '_blank')
-            })
+            item.area.on('interact', () => { window.open(_option.href, '_blank') })
 
-            // Texture
             item.texture = _option.labelTexture
             item.texture.magFilter = THREE.NearestFilter
             item.texture.minFilter = THREE.LinearFilter
 
-            // Create label
             item.labelMesh = new THREE.Mesh(this.links.labelGeometry, new THREE.MeshBasicMaterial({ wireframe: false, color: 0xffffff, alphaMap: _option.labelTexture, depthTest: true, depthWrite: false, transparent: true }))
-            item.labelMesh.position.x = item.x                          // centred on the platform tile
-            item.labelMesh.position.y = item.y + this.links.labelOffset  // tweak labelOffset (-1.6) to move up/down
+            item.labelMesh.position.x = item.x
+            item.labelMesh.position.y = item.y + this.links.labelOffset
             item.labelMesh.matrixAutoUpdate = false
             item.labelMesh.updateMatrix()
             this.links.container.add(item.labelMesh)
 
-            // Save
-            this.links.items.push(item)
+            // For entries beyond the 4 GLB tiles, create a synthetic platform tile
+            if(i >= 4)
+            {
+                const platVisual = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 0.12))
+                platVisual.name = 'shadeGray'
+                const platBase = new THREE.Object3D()
+                platBase.add(platVisual)
 
+                const platCollBox = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1))
+                platCollBox.name = 'box'
+                platCollBox.scale.set(1.8, 1.8, 0.12)
+                const platColl = new THREE.Object3D()
+                platColl.add(platCollBox)
+
+                this.objects.add({
+                    base:       platBase,
+                    collision:  platColl,
+                    offset:     new THREE.Vector3(item.x, item.y, 0.06),
+                    duplicated: false,
+                    mass:       0
+                })
+            }
+
+            this.links.items.push(item)
             i++
         }
     }
@@ -207,7 +230,12 @@ export default class InformationSection
             start: new THREE.Vector2(this.x - 1.2, this.y + 13),
             delta: new THREE.Vector2(0, - 20)
         })
-        // Horizontal branch going right to the publications panel (pubX = this.x + 12)
+        // Short horizontal branch along the social-link row — covers the 4 GLB platforms only
+        this.tiles.add({
+            start: new THREE.Vector2(this.x - 1.2, this.y + this.links.y),
+            delta: new THREE.Vector2(11, 0)
+        })
+        // Horizontal branch going right to the publications panel
         this.tiles.add({
             start: new THREE.Vector2(this.x - 1.2, this.y - 10),
             delta: new THREE.Vector2(14, 0)
@@ -297,6 +325,8 @@ export default class InformationSection
             window.open('https://ieeexplore.ieee.org/document/11217880', '_blank')
         })
     }
+
+
 
     setCVObject()
     {

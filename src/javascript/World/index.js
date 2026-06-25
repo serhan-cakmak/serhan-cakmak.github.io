@@ -14,6 +14,7 @@ import ProjectsSection from './Sections/ProjectsSection.js'
 import CrossroadsSection from './Sections/CrossroadsSection.js'
 import InformationSection from './Sections/InformationSection.js'
 import PlaygroundSection from './Sections/PlaygroundSection.js'
+import GallerySection from './Sections/GallerySection.js'
 // import DistinctionASection from './Sections/DistinctionASection.js'
 // import DistinctionBSection from './Sections/DistinctionBSection.js'
 // import DistinctionCSection from './Sections/DistinctionCSection.js'
@@ -489,10 +490,17 @@ export default class World
             ...options,
             x: - 38,
             y: - 34
-            // x: - 15,
-            // y: - 4
         })
         this.container.add(this.sections.playground.container)
+
+        // Gallery — photo boards scattered across the map
+        this.sections.gallery = new GallerySection({
+            resources: this.resources,
+            objects:   this.objects,
+            zones:     this.zones,
+            time:      this.time
+        })
+        this.container.add(this.sections.gallery.container)
     }
 
     setEasterEggs()
