@@ -132,52 +132,25 @@ export default class InformationSection
             item.labelMesh.updateMatrix()
             this.links.container.add(item.labelMesh)
 
-            if(i >= 4)
+            if(i === 4)
             {
-                // Find one platform tile from the already-processed static container.
-                // Filter by geometry bounding box: tiles are small (< 3.5 units) and flat (z < 0.5).
-                // This avoids picking up the large floor mesh.
-                if(!this._tileMeshTemplate && this._staticObj)
-                {
-                    const _sz = new THREE.Vector3()
-                    this._staticObj.container.traverse((child) =>
-                    {
-                        if(this._tileMeshTemplate || !(child instanceof THREE.Mesh)) return
-                        if(!child.geometry.boundingBox) child.geometry.computeBoundingBox()
-                        child.geometry.boundingBox.getSize(_sz)
-                        if(_sz.x > 0.5 && _sz.x < 3.5 && _sz.y > 0.5 && _sz.y < 3.5 && _sz.z < 0.5)
-                            this._tileMeshTemplate = child
-                    })
-                }
-
-                if(this._tileMeshTemplate)
-                {
-                    // Clone the exact geometry+material — identical to GitHub, LinkedIn, etc.
-                    const clone = this._tileMeshTemplate.clone()
-                    clone.position.set(
-                        item.x - this.x,                      // local x within static container
-                        this._tileMeshTemplate.position.y,    // same y as the other tiles
-                        this._tileMeshTemplate.position.z     // same z height
-                    )
-                    clone.matrixAutoUpdate = false
-                    clone.updateMatrix()
-                    this._staticObj.container.add(clone)
-                }
-
-                // Physics collision body (empty visual base — visuals handled above)
-                const emptyBase = new THREE.Object3D()
-                const platCollBox = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1))
-                platCollBox.name = 'box'
-                platCollBox.scale.set(1.8, 1.8, 0.2)
-                const platColl = new THREE.Object3D()
-                platColl.add(platCollBox)
-
+                // Add the static scene shifted so that:
+                //   GLB tile i=0 (local x ≈ links.x) lands at the i=4 world position
+                //   GLB tile i=1 (local x ≈ links.x + distanceBetween) lands at i=5
+                // This is the SAME objects.add() call as setStatic() — exact same rendering.
+                // Empty collision so there are no invisible bump surfaces.
                 this.objects.add({
-                    base:       emptyBase,
-                    collision:  platColl,
-                    offset:     new THREE.Vector3(item.x, item.y, 0.1),
-                    duplicated: false,
-                    mass:       0
+                    base:               this.resources.items.informationStaticBase.scene,
+                    collision:          new THREE.Object3D(),   // no shapes → no bumping
+                    floorShadowTexture: this.resources.items.informationStaticFloorShadowTexture,
+                    offset:    new THREE.Vector3(
+                        item.x - this.links.x,    // this.x + distanceBetween * 4
+                        item.y - this.links.y,    // this.y
+                        0
+                    ),
+                    rotation:  new THREE.Euler(0, 0, 0),
+                    duplicated: true,
+                    mass: 0
                 })
             }
 
