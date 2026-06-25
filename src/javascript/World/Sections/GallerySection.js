@@ -25,8 +25,8 @@ export default class GallerySection
         //   Info path:  x≈−8  to  15, y≈−48 to −80  (road at x≈0)
         this.items = [
             // ── Right at the start ───────────────────────────────────────────
-            { x:  -8, y:  -5, src: './models/gallery/photo_01.jpg' },
-            { x:  10, y:  -6, src: './models/gallery/photo_02.jpg' },
+            { x:  -9, y:  -5, src: './models/gallery/photo_01.jpg' },
+            { x:  12, y:  -6, src: './models/gallery/photo_02.jpg' },
             { x:  -4, y: -18, src: './models/gallery/photo_03.jpg' },
 
             // ── Close left ───────────────────────────────────────────────────
@@ -38,7 +38,7 @@ export default class GallerySection
             // ── Close right + mid right — spread across all y levels ─────────
             { x:  16, y: -14, src: './models/gallery/photo_08.jpg' },
             { x:  26, y: -12, src: './models/gallery/photo_09.jpg' },
-            { x:  18, y: -15, src: './models/gallery/photo_10.jpg' },
+            { x:  23, y: -5, src: './models/gallery/photo_10.jpg' },
             { x:  36, y: -15, src: './models/gallery/photo_11.jpg' },
             { x:  48, y: -12, src: './models/gallery/photo_12.jpg' },
             { x:  54, y: -10, src: './models/gallery/photo_13.jpg' },

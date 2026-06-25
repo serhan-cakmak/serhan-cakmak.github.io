@@ -29,7 +29,8 @@ export default class InformationSection
 
     setStatic()
     {
-        this.objects.add({
+        // Store the result so setLinks() can clone platform tiles from it
+        this._staticObj = this.objects.add({
             base: this.resources.items.informationStaticBase.scene,
             collision: this.resources.items.informationStaticCollision.scene,
             floorShadowTexture: this.resources.items.informationStaticFloorShadowTexture,
@@ -131,24 +132,50 @@ export default class InformationSection
             item.labelMesh.updateMatrix()
             this.links.container.add(item.labelMesh)
 
-            // For entries beyond the 4 GLB tiles, create a synthetic platform tile
             if(i >= 4)
             {
-                const platVisual = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 0.12))
-                platVisual.name = 'shadeGray'
-                const platBase = new THREE.Object3D()
-                platBase.add(platVisual)
+                // Find one platform tile from the already-processed static container.
+                // Filter by geometry bounding box: tiles are small (< 3.5 units) and flat (z < 0.5).
+                // This avoids picking up the large floor mesh.
+                if(!this._tileMeshTemplate && this._staticObj)
+                {
+                    const _sz = new THREE.Vector3()
+                    this._staticObj.container.traverse((child) =>
+                    {
+                        if(this._tileMeshTemplate || !(child instanceof THREE.Mesh)) return
+                        if(!child.geometry.boundingBox) child.geometry.computeBoundingBox()
+                        child.geometry.boundingBox.getSize(_sz)
+                        if(_sz.x > 0.5 && _sz.x < 3.5 && _sz.y > 0.5 && _sz.y < 3.5 && _sz.z < 0.5)
+                            this._tileMeshTemplate = child
+                    })
+                }
 
+                if(this._tileMeshTemplate)
+                {
+                    // Clone the exact geometry+material — identical to GitHub, LinkedIn, etc.
+                    const clone = this._tileMeshTemplate.clone()
+                    clone.position.set(
+                        item.x - this.x,                      // local x within static container
+                        this._tileMeshTemplate.position.y,    // same y as the other tiles
+                        this._tileMeshTemplate.position.z     // same z height
+                    )
+                    clone.matrixAutoUpdate = false
+                    clone.updateMatrix()
+                    this._staticObj.container.add(clone)
+                }
+
+                // Physics collision body (empty visual base — visuals handled above)
+                const emptyBase = new THREE.Object3D()
                 const platCollBox = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1))
                 platCollBox.name = 'box'
-                platCollBox.scale.set(1.8, 1.8, 0.12)
+                platCollBox.scale.set(1.8, 1.8, 0.2)
                 const platColl = new THREE.Object3D()
                 platColl.add(platCollBox)
 
                 this.objects.add({
-                    base:       platBase,
+                    base:       emptyBase,
                     collision:  platColl,
-                    offset:     new THREE.Vector3(item.x, item.y, 0.06),
+                    offset:     new THREE.Vector3(item.x, item.y, 0.1),
                     duplicated: false,
                     mass:       0
                 })
@@ -225,20 +252,10 @@ export default class InformationSection
 
     setTiles()
     {
-        // Main vertical path through the info section
+        // Vertical path leads into the info section — stops at y = this.y = −55, no right turn
         this.tiles.add({
             start: new THREE.Vector2(this.x - 1.2, this.y + 13),
-            delta: new THREE.Vector2(0, - 20)
-        })
-        // Short horizontal branch along the social-link row — covers the 4 GLB platforms only
-        this.tiles.add({
-            start: new THREE.Vector2(this.x - 1.2, this.y + this.links.y),
-            delta: new THREE.Vector2(11, 0)
-        })
-        // Horizontal branch going right to the publications panel
-        this.tiles.add({
-            start: new THREE.Vector2(this.x - 1.2, this.y - 10),
-            delta: new THREE.Vector2(14, 0)
+            delta: new THREE.Vector2(0, - 13)
         })
     }
 
