@@ -178,7 +178,7 @@ export default class World
             position: new THREE.Vector2(0, 0),
             halfExtents: new THREE.Vector2(2.35, 1.5),
             hasKey: false,
-            testCar: false,
+            testCar: true,
             active: false
         })
 
