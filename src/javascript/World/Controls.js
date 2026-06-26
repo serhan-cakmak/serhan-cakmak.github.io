@@ -26,18 +26,29 @@ export default class Controls extends EventEmitter
         this.actions.brake = false
         this.actions.boost = false
 
-        document.addEventListener('visibilitychange', () =>
+        const resetAll = () =>
         {
-            if(!document.hidden)
+            this.actions.up = false
+            this.actions.right = false
+            this.actions.down = false
+            this.actions.left = false
+            this.actions.brake = false
+            this.actions.boost = false
+
+            if(this.touch && this.touch.joystick)
             {
-                this.actions.up = false
-                this.actions.right = false
-                this.actions.down = false
-                this.actions.left = false
-                this.actions.brake = false
-                this.actions.boost = false
+                this.touch.joystick.active = false
+                this.touch.joystick.$limit.style.opacity = '0.25'
+                this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
+                document.removeEventListener('touchend', this.touch.joystick.events.touchend)
+                document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
             }
-        })
+        }
+
+        // visibilitychange: tab comes back into view (Android, most browsers)
+        // pageshow persisted: page restored from iOS bfcache after back-navigation
+        document.addEventListener('visibilitychange', () => { if(!document.hidden) resetAll() })
+        window.addEventListener('pageshow', (e) => { if(e.persisted) resetAll() })
     }
 
     setKeyboard()
@@ -315,6 +326,19 @@ export default class Controls extends EventEmitter
         }
 
         this.touch.joystick.$element.addEventListener('touchstart', this.touch.joystick.events.touchstart, { passive: false })
+
+        // touchcancel fires when the OS interrupts touches (e.g. switching tabs mid-drag)
+        document.addEventListener('touchcancel', () =>
+        {
+            if(this.touch.joystick.active)
+            {
+                this.touch.joystick.active = false
+                this.touch.joystick.$limit.style.opacity = '0.25'
+                this.touch.joystick.$cursor.style.transform = 'translateX(0px) translateY(0px)'
+                document.removeEventListener('touchend', this.touch.joystick.events.touchend)
+                document.removeEventListener('touchmove', this.touch.joystick.events.touchmove)
+            }
+        })
 
         // Reveal
         this.touch.reveal = () =>

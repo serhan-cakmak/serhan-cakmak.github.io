@@ -279,7 +279,11 @@ export default class Area extends EventEmitter
 
         this.time.on('tick', () =>
         {
-            if(this.testCar)
+            // Guard against a missing car reference. The starting-screen area is built before
+            // the car exists, so its `this.car` is undefined — reading `.position` would throw
+            // every frame, and since EventEmitter has no try/catch that halts world.step and
+            // freezes the whole simulation.
+            if(this.testCar && this.car)
             {
                 const isIn = Math.abs(this.car.position.x - this.position.x) < Math.abs(this.halfExtents.x) && Math.abs(this.car.position.y - this.position.y) < Math.abs(this.halfExtents.y)
 

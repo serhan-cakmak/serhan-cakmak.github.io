@@ -174,11 +174,14 @@ export default class World
         this.startingScreen = {}
 
         // Area
+        // testCar must stay false: this area is created before the car exists, so it has no
+        // valid car reference. It is interacted with via the raycaster (mouse/touch over the
+        // start screen), not car position.
         this.startingScreen.area = this.areas.add({
             position: new THREE.Vector2(0, 0),
             halfExtents: new THREE.Vector2(2.35, 1.5),
             hasKey: false,
-            testCar: true,
+            testCar: false,
             active: false
         })
 

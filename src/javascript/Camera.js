@@ -19,6 +19,9 @@ export default class Camera
 
         this.target = new THREE.Vector3(0, 0, 0)
         this.targetEased = new THREE.Vector3(0, 0, 0)
+        // Desktop default. On touch this is raised in Application's touchstart handler so the
+        // camera follows the car more tightly on the narrow portrait viewport. (config.touch is
+        // still false here at construction, so it can't be branched on yet.)
         this.easing = 0.03
 
         // Debug
@@ -301,6 +304,13 @@ export default class Camera
         this.renderer.domElement.addEventListener('touchend', () =>
         {
             this.pan.up()
+
+            // Mobile only: when a look-around drag ends, ease the camera back to the car so it
+            // can't stay parked off-screen (the joystick otherwise only re-centers while driving).
+            if(this.config.touch)
+            {
+                this.pan.reset()
+            }
         })
 
         // Time tick event
