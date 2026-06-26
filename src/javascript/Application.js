@@ -54,12 +54,11 @@ export default class Application
             this.config.touch = true
             this.world.controls.setTouch()
 
-            // Mobile camera: follow the car more tightly and pull back a bit so it doesn't trail
-            // off the narrow portrait viewport while driving. Applied here (not in the Camera
-            // constructor) because config.touch only becomes true on this first touch.
-            this.camera.easing = 0.1
-            this.camera.zoom.value = 0.65
-            this.camera.zoom.targetValue = 0.65
+            // Mobile only: the car outruns the slow desktop camera easing and drives out of
+            // frame until the camera catches up seconds later. Raise the follow easing so the
+            // camera keeps up with the car. Applied here, not in the Camera constructor, because
+            // config.touch only becomes true on this first touch. PC keeps its 0.03 easing.
+            this.camera.easing = 0.3
 
             this.passes.horizontalBlurPass.strength = 1
             this.passes.horizontalBlurPass.material.uniforms.uStrength.value = new THREE.Vector2(this.passes.horizontalBlurPass.strength, 0)
