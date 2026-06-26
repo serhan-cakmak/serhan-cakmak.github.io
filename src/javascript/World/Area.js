@@ -304,5 +304,36 @@ export default class Area extends EventEmitter
                 this.interact()
             }
         })
+
+        if(this.config.touch)
+        {
+            let touchStartX = 0
+            let touchStartY = 0
+
+            this.renderer.domElement.addEventListener('touchstart', (_event) =>
+            {
+                const touch = _event.changedTouches[0]
+                if(touch)
+                {
+                    touchStartX = touch.clientX
+                    touchStartY = touch.clientY
+                }
+            })
+
+            this.renderer.domElement.addEventListener('touchend', (_event) =>
+            {
+                if(!this.isIn) return
+                const touch = _event.changedTouches[0]
+                if(touch)
+                {
+                    const dx = Math.abs(touch.clientX - touchStartX)
+                    const dy = Math.abs(touch.clientY - touchStartY)
+                    if(dx < 10 && dy < 10)
+                    {
+                        this.interact()
+                    }
+                }
+            })
+        }
     }
 }

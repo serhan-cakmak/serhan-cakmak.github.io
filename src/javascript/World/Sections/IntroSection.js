@@ -178,7 +178,7 @@ export default class IntroSection
                 bevelEnabled: true,
                 bevelThickness: 0.04,
                 bevelSize: 0.03,
-                bevelSegments: 2
+                bevelSegments: 1
             }
 
             // Placed at the same y as the original "creative dev" GLB objects (offset 0,0,0).
@@ -188,57 +188,48 @@ export default class IntroSection
                 { text: 'CAKMAK', xStart:   -3, y: -6 }
             ]
 
+            const letters = []
             for(const word of words)
             {
                 let xCursor = word.xStart
-
                 for(const letter of word.text.split(''))
                 {
                     const geo = new TextGeometry(letter, fontOptions)
                     geo.computeBoundingBox()
-
                     const w = geo.boundingBox.max.x - geo.boundingBox.min.x
                     const h = geo.boundingBox.max.y - geo.boundingBox.min.y
                     const d = geo.boundingBox.max.z - geo.boundingBox.min.z
+                    geo.translate(-(geo.boundingBox.min.x + w / 2), -(geo.boundingBox.min.y + h / 2), -(geo.boundingBox.min.z + d / 2))
+                    letters.push({ geo, w, h, d, x: xCursor + w / 2, y: word.y })
+                    xCursor += w + 0.12
+                }
+            }
 
-                    // Centre geometry so body origin = letter centre
-                    geo.translate(
-                        -(geo.boundingBox.min.x + w / 2),
-                        -(geo.boundingBox.min.y + h / 2),
-                        -(geo.boundingBox.min.z + d / 2)
-                    )
-
-                    const visualMesh = new THREE.Mesh(geo)
+            letters.forEach((l, i) =>
+            {
+                window.setTimeout(() =>
+                {
+                    const visualMesh = new THREE.Mesh(l.geo)
                     visualMesh.name = 'shadeWhite'
                     const baseScene = new THREE.Object3D()
                     baseScene.add(visualMesh)
 
-                    // Collision: "box" + scale = letter bbox → CANNON.Box(w/2, h/2, d/2)
                     const boxMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1))
                     boxMesh.name = 'box'
-                    boxMesh.scale.set(w, h, d)
+                    boxMesh.scale.set(l.w, l.h, l.d)
                     const collisionScene = new THREE.Object3D()
                     collisionScene.add(boxMesh)
-
-                    // Rotate +90° around X: letter height (local Y) → world Z (up),
-                    // letter face (local +Z) → world -Y (faces the car).
-                    // dropZ = h/2 so the letter base sits flush with the z=0 floor.
-                    const dropZ = h / 2
 
                     this.objects.add({
                         base:       baseScene,
                         collision:  collisionScene,
-                        offset:     new THREE.Vector3(xCursor + w / 2, word.y, dropZ),
+                        offset:     new THREE.Vector3(l.x, l.y, l.h / 2),
                         rotation:   new THREE.Euler(Math.PI / 2, 0, 0),
                         duplicated: false,
-                        shadow:     { sizeX: w + 0.2, sizeY: d + 0.2, offsetZ: - 0.3, alpha: 0.4 },
-                        mass:       1.5,
-                        soundName:  'brick'
+                        mass:       0.8
                     })
-
-                    xCursor += w + 0.12
-                }
-            }
+                }, i * 50)
+            })
         })
 
         // "creative" and "dev" GLB objects removed — replaced by the TextGeometry name above.
