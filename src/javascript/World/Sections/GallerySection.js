@@ -27,7 +27,7 @@ export default class GallerySection
             // ── Right at the start ───────────────────────────────────────────
             { x:  -9, y:  -5, src: './models/gallery/photo_01.jpg' },
             { x:  12, y:  -6, src: './models/gallery/photo_02.jpg' },
-            { x:  -4, y: -18, src: './models/gallery/photo_03.jpg' },
+            { x:  -20, y: -5, src: './models/gallery/photo_03.jpg' },
 
             // ── Close left ───────────────────────────────────────────────────
             { x: -14, y: -12, src: './models/gallery/photo_04.jpg' },

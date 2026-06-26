@@ -43,12 +43,14 @@ export default class Areas
         })
 
         // Mouse click event
+        // On touch devices, skip areas that use car-position detection (initialTestCar = true)
+        // because the touchend handler in Area.js already calls interact() for those.
+        // Raycaster-only areas (initialTestCar = false, e.g. starting screen) still need this path.
         window.addEventListener('mousedown', () =>
         {
-            if(this.mouse.currentArea)
-            {
-                this.mouse.currentArea.interact(false)
-            }
+            if(!this.mouse.currentArea) return
+            if(this.config.touch && this.mouse.currentArea.initialTestCar) return
+            this.mouse.currentArea.interact(false)
         })
 
         // Touch

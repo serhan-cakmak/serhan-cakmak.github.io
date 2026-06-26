@@ -141,9 +141,9 @@ export default class Physics
         this.car.options.controlsSteeringSpeed = 0.005 * 3
         this.car.options.controlsSteeringMax = Math.PI * 0.17
         this.car.options.controlsSteeringQuad = false
-        this.car.options.controlsAcceleratinMaxSpeed = 0.055 * 3 / 17
+        this.car.options.controlsAcceleratinMaxSpeed = this.config.touch ? 0.055 * 3 / 17 * 0.9 : 0.055 * 3 / 17
         this.car.options.controlsAcceleratinMaxSpeedBoost = 0.11 * 3 / 17
-        this.car.options.controlsAcceleratingSpeed = 2 * 4 * 2
+        this.car.options.controlsAcceleratingSpeed = this.config.touch ? 2 * 4 * 2 * 0.7 : 2 * 4 * 2
         this.car.options.controlsAcceleratingSpeedBoost = 3.5 * 4 * 2
         this.car.options.controlsAcceleratingQuad = true
         this.car.options.controlsBrakeStrength = 0.45 * 3
@@ -456,18 +456,39 @@ export default class Physics
              */
             if(this.controls.touch)
             {
-                let deltaAngle = 0
+                let steeringDelta = 0
 
-                if(this.controls.touch.joystick.active)
+                if(this.controls.touch.joystick.active && this.controls.touch.joystick.distance > 10)
                 {
-                    // Calculate delta between joystick and car angles
-                    deltaAngle = (this.controls.touch.joystick.angle.value - this.car.angle + Math.PI) % (Math.PI * 2) - Math.PI
+                    // Angle between joystick direction and car heading
+                    let deltaAngle = (this.controls.touch.joystick.angle.value - this.car.angle + Math.PI) % (Math.PI * 2) - Math.PI
                     deltaAngle = deltaAngle < - Math.PI ? deltaAngle + Math.PI * 2 : deltaAngle
+
+                    if(Math.abs(deltaAngle) <= Math.PI * 0.5)
+                    {
+                        // Joystick points into car's forward half → drive forward
+                        this.controls.actions.up = true
+                        this.controls.actions.down = false
+                        steeringDelta = deltaAngle
+                    }
+                    else
+                    {
+                        // Joystick points into car's backward half → reverse
+                        this.controls.actions.up = false
+                        this.controls.actions.down = true
+                        // Mirror around ±π so steering makes sense relative to the reverse direction
+                        steeringDelta = deltaAngle > 0 ? deltaAngle - Math.PI : deltaAngle + Math.PI
+                    }
+                }
+                else
+                {
+                    this.controls.actions.up = false
+                    this.controls.actions.down = false
                 }
 
                 // Update steering directly
                 const goingForward = Math.abs(this.car.forwardSpeed) < 0.01 ? true : this.car.goingForward
-                this.car.steering = deltaAngle * (goingForward ? - 1 : 1)
+                this.car.steering = steeringDelta * (goingForward ? - 1 : 1)
 
                 // Clamp steer
                 if(Math.abs(this.car.steering) > this.car.options.controlsSteeringMax)
