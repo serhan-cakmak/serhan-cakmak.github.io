@@ -10,6 +10,8 @@ export default class GallerySection
         this.objects   = _options.objects
         this.zones     = _options.zones
         this.time      = _options.time
+        this.physics   = _options.physics
+        this.config    = _options.config
 
         this.container = new THREE.Object3D()
         this.container.matrixAutoUpdate = false
@@ -26,7 +28,7 @@ export default class GallerySection
         this.items = [
             // ── Right at the start ───────────────────────────────────────────
             { x:  -9, y:  -5, src: './models/gallery/photo_01.jpg' },
-            { x:  12, y:  -6, src: './models/gallery/photo_02.jpg' },
+            { x:  12, y:  -10, src: './models/gallery/photo_02.jpg' },
             { x:  -20, y: -5, src: './models/gallery/photo_03.jpg' },
 
             // ── Close left ───────────────────────────────────────────────────
@@ -143,17 +145,45 @@ export default class GallerySection
         planeMesh.updateMatrix()
         wrapper.add(planeMesh)   // inside wrapper, not this.container
 
-        // Load photo and fade in
-        const img = new Image()
-        img.addEventListener('load', () =>
+        // Load photo and fade in. The source photos are multi-megabyte originals:
+        // fetch the raw bytes and let createImageBitmap decode + downscale them off
+        // the main thread (from a Blob, not an <img> — an <img> source forces a
+        // main-thread rasterization of the full-resolution photo). resizeWidth
+        // without resizeHeight preserves the aspect ratio; boards don't need more
+        // than ~1K anyway.
+        const applyTexture = (tex) =>
         {
-            const tex = new THREE.Texture(img)
             tex.anisotropy  = 4
             tex.needsUpdate = true
             mat.uniforms.uTexture.value = tex
             gsap.to(mat.uniforms.uTextureAlpha, { value: 1, duration: 1, ease: 'power4.inOut' })
-        })
-        img.src = src
+        }
+
+        fetch(src)
+            .then(response => response.blob())
+            .then((blob) =>
+            {
+                return createImageBitmap(blob, { imageOrientation: 'flipY', resizeWidth: 1024, resizeQuality: 'high' })
+                    .then((bitmap) =>
+                    {
+                        const tex = new THREE.Texture(bitmap)
+                        tex.flipY = false // already flipped by createImageBitmap
+                        applyTexture(tex)
+                    })
+                    .catch(() =>
+                    {
+                        // Safari has patchy support for createImageBitmap options:
+                        // fall back to a plain <img> texture (fine now that the
+                        // source files are downscaled)
+                        const img = new Image()
+                        img.addEventListener('load', () =>
+                        {
+                            applyTexture(new THREE.Texture(img))
+                            URL.revokeObjectURL(img.src)
+                        })
+                        img.src = URL.createObjectURL(blob)
+                    })
+            })
 
         if(!this.zones) return
 
@@ -257,13 +287,7 @@ export default class GallerySection
             panel.appendChild(btn)
             document.body.appendChild(panel)
 
-            const close = () =>
-            {
-                backdrop.style.display = 'none'
-                panel.style.display    = 'none'
-                const hint = document.getElementById('sc-img-hint')
-                if(hint) hint.style.display = 'none'
-            }
+            const close = () => this._hidePanel()
             backdrop.addEventListener('click', close)
             btn.addEventListener('click', (e) => { e.stopPropagation(); close() })
             document.addEventListener('keydown', (e) => { if(e.key === 'Escape') close() })
@@ -272,6 +296,53 @@ export default class GallerySection
         document.getElementById('sc-view-img').src = src
         document.getElementById('sc-view-backdrop').style.display = 'block'
         document.getElementById('sc-view-panel').style.display    = 'block'
+
+        // Stop the car completely while the image is up. Engine power is
+        // untouched, so driving away (which also closes the panel) is instant.
+        if(this.physics)
+        {
+            const body = this.physics.car.chassis.body
+            body.velocity.set(0, 0, 0)
+            body.angularVelocity.set(0, 0, 0)
+        }
+
+        // Alternative: gentle momentum bleed instead of a full stop
+        // if(this.physics)
+        // {
+        //     if(this._slowTween) this._slowTween.kill()
+        //
+        //     const body = this.physics.car.chassis.body
+        //     const state = { scale: 1 }
+        //     let previous = 1
+        //     this._slowTween = gsap.to(state, {
+        //         scale: 0.25,
+        //         duration: 0.6,
+        //         ease: 'power2.out',
+        //         onUpdate: () =>
+        //         {
+        //             // Multiply per frame so player input during the tween still applies
+        //             const ratio = state.scale / previous
+        //             previous = state.scale
+        //             body.velocity.x *= ratio
+        //             body.velocity.y *= ratio
+        //         }
+        //     })
+        // }
+
+        // The image stays up until the user drives (movement key) or presses
+        // Escape (handled elsewhere) or leaves the zone
+        if(!this._driveCloseHandler)
+        {
+            this._driveCloseHandler = (_event) =>
+            {
+                const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D']
+                if(keys.includes(_event.key))
+                {
+                    this._hidePanel()
+                }
+            }
+        }
+        window.addEventListener('keydown', this._driveCloseHandler)
     }
 
     _hidePanel()
@@ -282,6 +353,17 @@ export default class GallerySection
         if(backdrop) backdrop.style.display = 'none'
         if(panel)    panel.style.display    = 'none'
         if(hint)     hint.style.display     = 'none'
+
+        if(this._driveCloseHandler)
+        {
+            window.removeEventListener('keydown', this._driveCloseHandler)
+        }
+
+        if(this._slowTween)
+        {
+            this._slowTween.kill()
+            this._slowTween = null
+        }
     }
 
     _showHint()
@@ -300,9 +382,11 @@ export default class GallerySection
                 'z-index:10001', 'pointer-events:none', 'display:none',
                 'box-shadow:0 2px 12px rgba(0,0,0,0.4)'
             ].join(';')
-            hint.textContent = '🎮  Steer away to close  ·  Esc to dismiss'
             document.body.appendChild(hint)
         }
+        hint.textContent = this.config && this.config.touch
+            ? '👆  Tap outside the image to close'
+            : '🎮  Steer away to close  ·  Esc to dismiss'
         hint.style.display = 'block'
     }
 }

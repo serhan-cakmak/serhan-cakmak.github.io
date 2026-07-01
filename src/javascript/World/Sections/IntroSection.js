@@ -119,7 +119,9 @@ export default class IntroSection
         }
 
         this.otherInstructions = {}
-        this.otherInstructions.x = 16
+        // Close enough that its edge peeks into the initial view as a hint,
+        // without sitting fully in frame next to the car
+        this.otherInstructions.x = 12
         this.otherInstructions.y = - 2
 
         // Container

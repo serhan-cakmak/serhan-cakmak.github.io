@@ -412,6 +412,7 @@ export default class World
             resources: this.resources,
             camera: this.camera,
             passes: this.passes,
+            physics: this.physics,
             objects: this.objects,
             areas: this.areas,
             zones: this.zones,
@@ -501,7 +502,9 @@ export default class World
             resources: this.resources,
             objects:   this.objects,
             zones:     this.zones,
-            time:      this.time
+            time:      this.time,
+            physics:   this.physics,
+            config:    this.config
         })
         this.container.add(this.sections.gallery.container)
     }

@@ -7,6 +7,7 @@ export default class ProjectsSection
     constructor(_options)
     {
         // Options
+        this.config = _options.config
         this.time = _options.time
         this.resources = _options.resources
         this.camera = _options.camera
@@ -14,6 +15,7 @@ export default class ProjectsSection
         this.objects = _options.objects
         this.areas = _options.areas
         this.zones = _options.zones
+        this.physics = _options.physics
         this.tiles = _options.tiles
         this.debug = _options.debug
         this.x = _options.x
@@ -294,11 +296,13 @@ export default class ProjectsSection
 
         // Create project
         const project = new Project({
+            config: this.config,
             time: this.time,
             resources: this.resources,
             objects: this.objects,
             areas: this.areas,
             zones: this.zones,
+            physics: this.physics,
             geometries: this.geometries,
             meshes: this.meshes,
             debug: this.debugFolder,

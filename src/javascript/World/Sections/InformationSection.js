@@ -280,7 +280,8 @@ export default class InformationSection
 
         ctx.font = '24px Arial, sans-serif'
         ctx.fillStyle = '#555555'
-        ctx.fillText('drive onto this panel + press ENTER', W / 2, 424)
+        const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0
+        ctx.fillText(isTouchDevice ? 'drive onto this panel + tap to open' : 'drive onto this panel + press ENTER', W / 2, 424)
 
         this.publications = {}
         this.publications.multiplier = 5.5

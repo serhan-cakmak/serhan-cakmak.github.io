@@ -7,6 +7,7 @@ import World from './World/index.js'
 import Resources from './Resources.js'
 import Camera from './Camera.js'
 import ThreejsJourney from './ThreejsJourney.js'
+import MiniMap from './MiniMap.js'
 
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
@@ -35,6 +36,7 @@ export default class Application
         this.setCamera()
         this.setPasses()
         this.setWorld()
+        this.setMiniMap()
         this.setTitle()
         this.setThreejsJourney()
     }
@@ -238,6 +240,19 @@ export default class Application
             passes: this.passes
         })
         this.scene.add(this.world.container)
+    }
+
+    /**
+     * Set mini map
+     */
+    setMiniMap()
+    {
+        this.miniMap = new MiniMap({
+            time: this.time,
+            renderer: this.renderer,
+            scene: this.scene,
+            world: this.world
+        })
     }
 
     /**

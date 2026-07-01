@@ -142,9 +142,9 @@ export default class Physics
         this.car.options.controlsSteeringMax = Math.PI * 0.17
         this.car.options.controlsSteeringQuad = false
         this.car.options.controlsAcceleratinMaxSpeed = this.config.touch ? 0.055 * 3 / 17 * 0.9 : 0.055 * 3 / 17
-        this.car.options.controlsAcceleratinMaxSpeedBoost = 0.11 * 3 / 17
+        this.car.options.controlsAcceleratinMaxSpeedBoost = 0.08 * 3 / 17
         this.car.options.controlsAcceleratingSpeed = this.config.touch ? 2 * 4 * 2 * 0.7 : 2 * 4 * 2
-        this.car.options.controlsAcceleratingSpeedBoost = 3.5 * 4 * 2
+        this.car.options.controlsAcceleratingSpeedBoost = 2.8 * 4 * 2
         this.car.options.controlsAcceleratingQuad = true
         this.car.options.controlsBrakeStrength = 0.45 * 3
 
@@ -464,7 +464,12 @@ export default class Physics
                     let deltaAngle = (this.controls.touch.joystick.angle.value - this.car.angle + Math.PI) % (Math.PI * 2) - Math.PI
                     deltaAngle = deltaAngle < - Math.PI ? deltaAngle + Math.PI * 2 : deltaAngle
 
-                    if(Math.abs(deltaAngle) <= Math.PI * 0.5)
+                    // Hysteresis around the 90° boundary: once driving forward it
+                    // takes a clearly-backward push to flip into reverse (and vice
+                    // versa), so borderline pushes don't invert the car
+                    const reverseThreshold = this.controls.actions.down ? Math.PI * 0.45 : Math.PI * 0.55
+
+                    if(Math.abs(deltaAngle) <= reverseThreshold)
                     {
                         // Joystick points into car's forward half → drive forward
                         this.controls.actions.up = true

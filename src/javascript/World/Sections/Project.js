@@ -8,11 +8,13 @@ export default class Project
     constructor(_options)
     {
         // Options
+        this.config = _options.config
         this.time = _options.time
         this.resources = _options.resources
         this.objects = _options.objects
         this.areas = _options.areas
         this.zones = _options.zones
+        this.physics = _options.physics
         this.name = _options.name
         this.geometries = _options.geometries
         this.meshes = _options.meshes
@@ -151,8 +153,8 @@ export default class Project
                     this.container.add(board.viewBtn)
 
                     // Zone matches the button footprint (1.2 × 1.2).
-                    // Image appears when car enters, stays while on the button.
-                    // Only Esc or driving off the button hides it — steering keys don't dismiss it.
+                    // The car stops fully when the image opens; any movement key,
+                    // Esc, or leaving the zone dismisses it.
                     board.viewZone = this.zones.add({
                         position:    { x: board.x, y: board.y - 2 },
                         halfExtents: { x: 1.2, y: 1.2 }
@@ -208,6 +210,11 @@ export default class Project
         if(backdrop) backdrop.style.display = 'none'
         if(panel)    panel.style.display    = 'none'
         if(hint)     hint.style.display     = 'none'
+
+        if(this._driveCloseHandler)
+        {
+            window.removeEventListener('keydown', this._driveCloseHandler)
+        }
     }
 
     _showHint()
@@ -227,9 +234,11 @@ export default class Project
                 'pointer-events:none', 'display:none',
                 'box-shadow:0 2px 12px rgba(0,0,0,0.4)'
             ].join(';')
-            hint.textContent = '🎮  Steer away to close  ·  Esc to dismiss'
             document.body.appendChild(hint)
         }
+        hint.textContent = this.config && this.config.touch
+            ? '👆  Tap outside the image to close'
+            : '🎮  Steer away to close  ·  Esc to dismiss'
         hint.style.display = 'block'
     }
 
@@ -278,9 +287,11 @@ export default class Project
             ].join(';')
             panel.appendChild(btn)
 
-            // Esc hint
+            // Dismiss hint
             const hint = document.createElement('p')
-            hint.textContent = 'Click outside or press Esc to close'
+            hint.textContent = this.config && this.config.touch
+                ? 'Tap outside to close'
+                : 'Drive away or press Esc to close'
             hint.style.cssText = [
                 'position:absolute', 'bottom:-28px', 'left:50%',
                 'transform:translateX(-50%)',
@@ -291,11 +302,7 @@ export default class Project
 
             document.body.appendChild(panel)
 
-            const close = () =>
-            {
-                document.getElementById('sc-view-backdrop').style.display = 'none'
-                panel.style.display = 'none'
-            }
+            const close = () => this._hidePanel()
 
             backdrop.addEventListener('click', close)
             btn.addEventListener('click', (e) => { e.stopPropagation(); close() })
@@ -305,6 +312,31 @@ export default class Project
         document.getElementById('sc-view-img').src = src
         document.getElementById('sc-view-backdrop').style.display = 'block'
         document.getElementById('sc-view-panel').style.display = 'block'
+
+        // Same behavior as the gallery boards: stop the car completely while
+        // the image is up. Engine power is untouched, so driving away
+        // (which also closes the panel) is instant.
+        if(this.physics)
+        {
+            const body = this.physics.car.chassis.body
+            body.velocity.set(0, 0, 0)
+            body.angularVelocity.set(0, 0, 0)
+        }
+
+        // The image stays up until the user drives (movement key) or presses
+        // Escape (handled elsewhere) or leaves the zone
+        if(!this._driveCloseHandler)
+        {
+            this._driveCloseHandler = (_event) =>
+            {
+                const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D']
+                if(keys.includes(_event.key))
+                {
+                    this._hidePanel()
+                }
+            }
+        }
+        window.addEventListener('keydown', this._driveCloseHandler)
     }
 
     _buildTextCanvas(slide)

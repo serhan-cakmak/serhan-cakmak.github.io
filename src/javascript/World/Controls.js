@@ -159,7 +159,7 @@ export default class Controls extends EventEmitter
         this.touch.joystick.$element.style.userSelect = 'none'
         this.touch.joystick.$element.style.position = 'fixed'
         this.touch.joystick.$element.style.bottom = '10px'
-        this.touch.joystick.$element.style.right = '10px'
+        this.touch.joystick.$element.style.left = '10px'
         this.touch.joystick.$element.style.width = '170px'
         this.touch.joystick.$element.style.height = '170px'
         this.touch.joystick.$element.style.borderRadius = '50%'
@@ -198,6 +198,10 @@ export default class Controls extends EventEmitter
         // Angle
         this.touch.joystick.angle = {}
 
+        // Screen-to-world rotation. Recomputed each tick from the live camera
+        // angle: the camera azimuth changes in the projects area (and tweens
+        // between zones), and a stale offset rotates the joystick mapping —
+        // pushes near the forward/reverse boundary then read as reverse.
         this.touch.joystick.angle.offset = Math.PI * 0.18
 
         this.touch.joystick.angle.center = {}
@@ -229,6 +233,12 @@ export default class Controls extends EventEmitter
             // Joystick active
             if(this.touch.joystick.active)
             {
+                // Derive the screen-to-world offset from where the camera sits:
+                // world direction of "screen up" on the ground, minus the π/2 the
+                // joystick already reports for an upward push
+                const cameraAngle = this.camera.angle.value
+                this.touch.joystick.angle.offset = Math.atan2(- cameraAngle.y, - cameraAngle.x) - Math.PI * 0.5
+
                 // Calculate joystick angle
                 this.touch.joystick.angle.originalValue = - Math.atan2(
                     this.touch.joystick.angle.current.y - this.touch.joystick.angle.center.y,
@@ -340,10 +350,71 @@ export default class Controls extends EventEmitter
             }
         })
 
+        /**
+         * Brake button — hold to stop without flipping into reverse
+         * (the joystick's backward pull brakes but then reverses)
+         */
+        this.touch.brake = {}
+
+        this.touch.brake.$element = document.createElement('div')
+        this.touch.brake.$element.style.cssText = `
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: fixed;
+            bottom: 45px;
+            right: 25px;
+            width: 90px;
+            height: 90px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            will-change: opacity;
+        `
+        this.touch.brake.$element.textContent = 'BRAKE'
+        document.body.appendChild(this.touch.brake.$element)
+
+        this.touch.brake.touchIdentifier = null
+        this.touch.brake.$element.addEventListener('touchstart', (_event) =>
+        {
+            _event.preventDefault()
+            const touch = _event.changedTouches[0]
+            if(touch)
+            {
+                this.touch.brake.touchIdentifier = touch.identifier
+                this.actions.brake = true
+                this.touch.brake.$element.style.background = 'rgba(255, 255, 255, 0.25)'
+            }
+        }, { passive: false })
+
+        const brakeRelease = (_event) =>
+        {
+            const touches = [..._event.changedTouches]
+            const touch = touches.find((_touch) => _touch.identifier === this.touch.brake.touchIdentifier)
+            if(touch)
+            {
+                this.touch.brake.touchIdentifier = null
+                this.actions.brake = false
+                this.touch.brake.$element.style.background = 'transparent'
+            }
+        }
+        document.addEventListener('touchend', brakeRelease)
+        document.addEventListener('touchcancel', brakeRelease)
+
         // Reveal
         this.touch.reveal = () =>
         {
             this.touch.joystick.$element.style.opacity = 1
+            this.touch.brake.$element.style.opacity = 0.5
         }
     }
 }
