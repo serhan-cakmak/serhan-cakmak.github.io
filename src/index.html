@@ -47,6 +47,73 @@
 </head>
 <body>
 
+    <main class="entry-choice js-entry-choice" aria-labelledby="entry-title">
+        <div class="entry-choice__route" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="entry-choice__content">
+            <div class="entry-choice__heading">
+                <h1 class="entry-choice__name" id="entry-title">SERHAN CAKMAK</h1>
+                <p class="entry-choice__prompt">How would you like to<br>get to know me?</p>
+            </div>
+
+            <div class="entry-choice__options">
+                <a
+                    class="entry-card entry-card--cv"
+                    href="https://drive.google.com/file/d/1pP4FdU0Ev2MDGo1uztkCfD0MyhM2p-8n/view?usp=sharing"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <span class="entry-card__topline">
+                        <span>01</span>
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M7 3h7l5 5v13H7z"></path>
+                            <path d="M14 3v5h5M10 13h6M10 17h6"></path>
+                        </svg>
+                    </span>
+                    <span class="entry-card__copy">
+                        <strong>Read my CV</strong>
+                        <span>My experience, education &amp; skills — all in one place.</span>
+                    </span>
+                    <span class="entry-card__action" aria-hidden="true">
+                        Open CV
+                        <svg viewBox="0 0 20 20"><path d="M4 10h11M11 6l4 4-4 4"></path></svg>
+                    </span>
+                </a>
+
+                <button class="entry-card entry-card--game js-start-game" type="button">
+                    <span class="entry-card__recommendation">
+                        I’d definitely choose this one
+                        <svg aria-hidden="true" viewBox="0 0 48 30">
+                            <path d="M2 4c17 0 29 8 38 20"></path>
+                            <path d="m34 22 7 3 1-8"></path>
+                        </svg>
+                    </span>
+                    <span class="entry-card__topline">
+                        <span>02</span>
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M7.5 8h9a4.5 4.5 0 0 1 4.3 5.8l-1.1 3.5a2.4 2.4 0 0 1-4.1.8L14 16h-4l-1.6 2.1a2.4 2.4 0 0 1-4.1-.8l-1.1-3.5A4.5 4.5 0 0 1 7.5 8Z"></path>
+                            <path d="M7 11v4M5 13h4M16.5 12.5h.01M18.5 14.5h.01"></path>
+                        </svg>
+                    </span>
+                    <span class="entry-card__copy">
+                        <strong>Explore my 3D world</strong>
+                        <span>Drive through my work, take on parkour challenges, uncover easter eggs &amp; visit my socials.</span>
+                    </span>
+                    <span class="entry-card__action" aria-hidden="true">
+                        Enter my world
+                        <svg viewBox="0 0 20 20"><path d="M4 10h11M11 6l4 4-4 4"></path></svg>
+                    </span>
+                </button>
+            </div>
+
+            <p class="entry-choice__status js-entry-status" role="status" aria-live="polite"></p>
+        </div>
+    </main>
+
     <canvas class="canvas js-canvas"></canvas>
 
     <div class="threejs-journey is-hover-none js-threejs-journey">

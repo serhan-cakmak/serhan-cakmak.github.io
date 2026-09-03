@@ -16,6 +16,316 @@ html
     overflow: hidden;
 }
 
+button,
+a
+{
+    font: inherit;
+}
+
+.entry-choice
+{
+    --ink: #1d140f;
+    --cream: #fff9f0;
+    --orange: #ff9548;
+    position: fixed;
+    z-index: 10;
+    inset: 0;
+    display: grid;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background:
+        radial-gradient(circle at 50% -20%, rgba(255, 149, 72, 0.26), transparent 48%),
+        var(--ink);
+    color: var(--cream);
+    font-family: 'Comic Neue', cursive;
+    opacity: 1;
+    visibility: visible;
+}
+
+.entry-choice[hidden]
+{
+    display: none;
+}
+
+.is-playing .entry-choice
+{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.entry-choice::before
+{
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 72px 72px;
+}
+
+.entry-choice__route
+{
+    position: absolute;
+    right: clamp(26px, 5vw, 80px);
+    top: 0;
+    height: 30%;
+    width: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+    opacity: 0.75;
+}
+
+.entry-choice__route::before
+{
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    border-left: 2px dashed rgba(255, 255, 255, 0.4);
+}
+
+.entry-choice__route span
+{
+    position: relative;
+    z-index: 1;
+    flex: 0 0 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+}
+
+.entry-choice__route span:first-child
+{
+    margin-top: 38px;
+}
+
+.entry-choice__route span:nth-child(2)
+{
+    margin-top: 42px;
+    background: var(--cream);
+}
+
+.entry-choice__route span:nth-child(3)
+{
+    margin-top: 42px;
+}
+
+.entry-choice__content
+{
+    position: relative;
+    z-index: 1;
+    width: min(1120px, calc(100% - 64px));
+    min-height: 100%;
+    margin: 0 auto;
+    padding: clamp(30px, 5vh, 64px) 0 clamp(26px, 5vh, 54px);
+    display: flex;
+    flex-direction: column;
+}
+
+.entry-choice__name
+{
+    color: var(--cream);
+    font-size: clamp(64px, 10vw, 132px);
+    line-height: 0.82;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+}
+
+.entry-choice__heading
+{
+    margin-top: clamp(52px, 8vh, 88px);
+    padding: 0 0 clamp(48px, 7vh, 72px);
+}
+
+.entry-choice__prompt
+{
+    margin-top: clamp(18px, 3vh, 30px);
+    max-width: 900px;
+    color: var(--orange);
+    font-size: clamp(34px, 4.8vw, 60px);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+}
+
+.entry-choice__options
+{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.entry-card
+{
+    position: relative;
+    min-height: clamp(180px, 24vh, 238px);
+    padding: clamp(20px, 2.7vw, 32px);
+    border: 0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    appearance: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.entry-card:hover
+{
+    transform: translateY(-6px);
+}
+
+.entry-card:focus-visible
+{
+    outline: 3px solid var(--cream);
+    outline-offset: 4px;
+}
+
+.entry-card--cv
+{
+    background: var(--cream);
+    color: var(--ink);
+}
+
+.entry-card--cv:hover
+{
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+}
+
+.entry-card--game
+{
+    background: var(--orange);
+    color: var(--ink);
+}
+
+.entry-card__recommendation
+{
+    position: absolute;
+    right: 14px;
+    bottom: calc(100% + 6px);
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1;
+    white-space: nowrap;
+    transform: rotate(-2deg);
+    pointer-events: none;
+}
+
+.entry-card__recommendation svg
+{
+    width: 46px;
+    height: 29px;
+    margin-bottom: -13px;
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.entry-card--game:hover
+{
+    box-shadow: 0 22px 50px rgba(255, 115, 25, 0.2);
+}
+
+.entry-card:disabled
+{
+    cursor: wait;
+}
+
+.entry-card__topline,
+.entry-card__action
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.entry-card__topline > svg
+{
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.entry-card__copy
+{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 28px 0;
+}
+
+.entry-card__copy strong
+{
+    font-size: clamp(25px, 3vw, 38px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+}
+
+.entry-card__copy > span
+{
+    font-size: 16px;
+    line-height: 1.35;
+    opacity: 0.68;
+}
+
+.entry-card__action
+{
+    justify-content: flex-start;
+    gap: 9px;
+}
+
+.entry-card__action svg
+{
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease;
+}
+
+.entry-card:hover .entry-card__action svg
+{
+    transform: translateX(4px);
+}
+
+.entry-card.is-loading .entry-card__action
+{
+    opacity: 0.5;
+}
+
+.entry-choice__status
+{
+    height: 18px;
+    margin-top: 12px;
+    color: rgba(255, 249, 240, 0.7);
+    font-size: 14px;
+    line-height: 18px;
+}
+
 .canvas
 {
     position: fixed;
@@ -265,4 +575,111 @@ html
 {
     transform-origin: 100% 0;
     opacity: 0.2;
+}
+
+@media (max-width: 720px)
+{
+    .entry-choice__content
+    {
+        width: min(100% - 36px, 540px);
+        padding-top: 22px;
+        padding-bottom: 14px;
+    }
+
+    .entry-choice__heading
+    {
+        margin-top: 38px;
+        padding: 0 0 44px;
+    }
+
+    .entry-choice__name
+    {
+        font-size: clamp(40px, 11.5vw, 56px);
+    }
+
+    .entry-choice__prompt
+    {
+        margin-top: 16px;
+        font-size: clamp(30px, 8.8vw, 42px);
+    }
+
+    .entry-choice__options
+    {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .entry-card
+    {
+        min-height: 166px;
+        padding: 18px;
+    }
+
+    .entry-card--game
+    {
+        margin-top: 30px;
+    }
+
+    .entry-card__recommendation
+    {
+        right: 10px;
+        bottom: calc(100% + 5px);
+        font-size: 14px;
+    }
+
+    .entry-card__copy
+    {
+        margin: 20px 0;
+    }
+
+    .entry-card__copy strong
+    {
+        font-size: 26px;
+    }
+
+    .entry-choice__route
+    {
+        right: 24px;
+        height: 21%;
+    }
+}
+
+@media (max-height: 700px) and (min-width: 721px)
+{
+    .entry-choice__content
+    {
+        padding-top: 26px;
+        padding-bottom: 18px;
+    }
+
+    .entry-choice__heading
+    {
+        padding: 24px 0;
+    }
+
+    .entry-choice h1
+    {
+        font-size: clamp(44px, 7vw, 72px);
+    }
+
+    .entry-card
+    {
+        min-height: 176px;
+    }
+
+    .entry-card__copy
+    {
+        margin: 20px 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .entry-choice,
+    .canvas,
+    .entry-card,
+    .entry-card__action svg
+    {
+        transition: none;
+    }
 }
