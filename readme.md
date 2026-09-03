@@ -1,20 +1,22 @@
-# Folio 2019
-# TODO:
-- ?? adding a ball-pool in teh middle
-- Modify and change the UI a bit. - color, font, strucutre. The current code is an old repo, maybe update them with some new libraries and new features. 
-- Add letterbox and spotify - embed them as 3D objects - playing the music maybe when you come on top of hte music etc???
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+# Serhan Cakmak — Interactive Portfolio
 
-``` bash
-# Install dependencies
+## [Try it here! → serhan-cakmak.github.io](https://serhan-cakmak.github.io/)
+
+Drive through my 3D world to explore my work, take on parkour challenges, uncover easter eggs, and visit my socials — or jump straight to my CV.
+
+## Run locally
+
+Install [Node.js](https://nodejs.org/en/download/), then run:
+
+```bash
 npm install
-
-# Serve at localhost:1234
 npm run dev
+```
 
-# Build for production in the dist/ directory
+Create a production build with:
+
+```bash
 npm run build
 ```
 
+Based on Bruno Simon's *Folio 2019* project.
